@@ -30,6 +30,7 @@ io.on("connection", (socket) => {
         socket.emit("waiting", { message: "Waiting for player" });
     }
     socket.on("move",(newMove)=>{
+        console.log(newMove);
         const currentChess = current_Game_Status[socket.id];
         const moveIsValid=currentChess.move(newMove);
         console.log(moveIsValid);
@@ -62,9 +63,7 @@ io.on("connection", (socket) => {
     });
 });
 
-app.get("/play", (req, res) => {
-    res.send("Welcome to the play route! 🎮");
-});
+
 
 server.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
