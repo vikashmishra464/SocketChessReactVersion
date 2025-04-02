@@ -6,20 +6,21 @@ const PORT = process.env.PORT || 3000;
 const app = express();
 const server = http.createServer(app);
 const io = socketIO(server);
-const chess=new Chess();
 let waiting_Players = [];
 let active_Games = {};
-
+let current_Game_Status={};
 io.on("connection", (socket) => {
     console.log("New Player Connected:", socket.id);
 
     if (waiting_Players.length > 0) {
         const firstPlayer = socket;
         const secondPlayer = waiting_Players.shift();
-
         active_Games[firstPlayer.id] = secondPlayer.id;
         active_Games[secondPlayer.id] = firstPlayer.id;
-
+        const chess=new Chess();
+        console.log(chess.fen());
+        current_Game_Status[firstPlayer.id]=chess;
+        current_Game_Status[secondPlayer.id]=chess;
         firstPlayer.emit("gameStart", { opponent: secondPlayer.id,color:"white" });
         secondPlayer.emit("gameStart", { opponent: firstPlayer.id,color:"black"});
         console.log("Match started:", firstPlayer.id, secondPlayer.id);
@@ -30,22 +31,16 @@ io.on("connection", (socket) => {
     }
     socket.on("move",(msg)=>{
         const newMove={from:msg.from,to:msg.to,promotion:msg.promotion};
-        const moveIsValid=chess.move(newMove);
+        const currentChess = current_Game_Status[socket.id];
+        const moveIsValid=currentChess.move(newMove);
         console.log(moveIsValid);
         if(moveIsValid!==null){
+            current_Game_Status[active_Games[socket.id]]=currentChess;
             const opponentId=active_Games[socket.id];
-            console.log(opponentId);
             if(opponentId){
                 const opponent = io.sockets.sockets.get(opponentId);
-                
-                const validMove={
-                    moveFromRow:msg.moveFromRow,
-                    moveFromCol:msg.moveFromCol,
-                    moveToRow:msg.moveToRow,
-                    moveToCol:msg.moveFromCol
-                }
-                opponent.emit("move",validMove);
-                socket.emit("move",validMove);
+                opponent.emit("move",currentChess.fen());
+                socket.emit("move",currentChess.fen());
             }
         }
     })
@@ -60,19 +55,14 @@ io.on("connection", (socket) => {
             }
             delete active_Games[socket.id];
             delete active_Games[opponentId];
+            delete current_Game_Status[socket.id];
+            delete current_Game_Status[opponentId];
         }
 
         waiting_Players = waiting_Players.filter(player => player.id !== socket.id);
     });
 });
-const move = {
-    from: `${String.fromCharCode(97 + 3)}${8 - 5}`,
-    to: `${String.fromCharCode(97 + 5)}${8 - 2}`,
-    promotion: 'q',
-};
-console.log(move);
 
-// console.log(chess.fen());
 app.get("/play", (req, res) => {
     res.send("Welcome to the play route! 🎮");
 });
