@@ -45,7 +45,8 @@ const ChessArea = () => {
       <h2>{status}</h2>
       <p>Opponent: {opponent}</p>
       <p>{color}</p>
-      <RenderBoard socket={socket}/>
+      <RenderBoard socket={socket} color={color} />
+
     </div>
   );
 };

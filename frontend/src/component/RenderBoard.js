@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import "./chessboardStyle.css";
 
-export default function App({ socket }) {
+export default function App({ socket, color}) {
   const resetChessBoard = [
     ["r", "n", "b", "q", "k", "b", "n", "r"],
     ["p", "p", "p", "p", "p", "p", "p", "p"],
@@ -12,7 +12,6 @@ export default function App({ socket }) {
     ["P", "P", "P", "P", "P", "P", "P", "P"],
     ["R", "N", "B", "Q", "K", "B", "N", "R"],
   ];
-
   const [board, setBoard] = useState([...resetChessBoard]);
   
   const pieceUnicode = {
@@ -48,14 +47,16 @@ export default function App({ socket }) {
   const handleDrop = (e, rowIndex, colIndex) => {
     e.preventDefault();
     if (!draggedFrom.current) return;
+    if(color==="black" && 'A'<=draggedItem.current && draggedItem.current<='Z'){
+      return ;
+    }
+    if(color==="white" && 'a'<=draggedItem.current && draggedItem.current<='z'){
+      return ;
+    }
 
     const move = {
       from: `${String.fromCharCode(97 + draggedFrom.current.colIndex)}${8 - draggedFrom.current.rowIndex}`,
       to: `${String.fromCharCode(97 + colIndex)}${8 - rowIndex}`,
-      moveFromRow: draggedFrom.current.rowIndex,
-      moveFromCol: draggedFrom.current.colIndex,
-      moveToRow: rowIndex,
-      moveToCol: colIndex,
       promotion: 'q',
     };
 
@@ -69,20 +70,12 @@ export default function App({ socket }) {
       setBoard([...resetChessBoard]);
     });
 
-    // socket.on("move", (newMove) => {
-    //   console.log(newMove);
-    //   setBoard((prevBoard) => {
-    //     const newBoard = prevBoard.map((row) => [...row]);
-    //     const currentItem = newBoard[newMove.moveFromRow][newMove.moveFromCol];
-    //     newBoard[newMove.moveFromRow][newMove.moveFromCol] = null;
-    //     newBoard[newMove.moveToRow][newMove.moveToCol] = currentItem;
-    //     return newBoard;
-    //   });
     socket.on("move", (newMove) => {
       console.log(newMove);
       const newBoard=parseFEN(newMove);
       setBoard(newBoard);
       });
+
     return () => {
       socket.off("move");
       socket.off("gamestart");

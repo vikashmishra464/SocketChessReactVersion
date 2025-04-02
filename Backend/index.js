@@ -29,8 +29,7 @@ io.on("connection", (socket) => {
         waiting_Players.push(socket);
         socket.emit("waiting", { message: "Waiting for player" });
     }
-    socket.on("move",(msg)=>{
-        const newMove={from:msg.from,to:msg.to,promotion:msg.promotion};
+    socket.on("move",(newMove)=>{
         const currentChess = current_Game_Status[socket.id];
         const moveIsValid=currentChess.move(newMove);
         console.log(moveIsValid);
@@ -43,7 +42,7 @@ io.on("connection", (socket) => {
                 socket.emit("move",currentChess.fen());
             }
         }
-    })
+    });
 
     socket.on("disconnect", () => {
         console.log(`Player ${socket.id} disconnected`);
