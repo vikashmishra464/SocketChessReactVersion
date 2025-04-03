@@ -1,19 +1,18 @@
 import React, { useEffect, useState } from "react";
 import { socket } from "./socketClientConnection";
-// import { Chessboard } from "react-chessboard";
 import RenderBoard from "./RenderBoard";
+import { connect } from "socket.io-client";
 const ChessArea = () => {
   const [opponent, setOpponent] = useState(null);
   const [status, setStatus] = useState("Connecting...");
   const [color,setColor]=useState(null);
 
   useEffect(() => {
-    socket.connect(); // Connect only when ChessGame is mounted
+    socket.connect();
 
     socket.on("connect", () => {
       setStatus("Waiting for Opponent");
     });
-    
 
     socket.on("waiting", (msg) => {
       setStatus(msg.message);
@@ -22,7 +21,7 @@ const ChessArea = () => {
     socket.on("gameStart", (msg) => {
       setOpponent(msg.opponent);
       setColor(msg.color);
-      setStatus("In a match");
+      setStatus("Connected");
     });
 
     socket.on("OpponentLeft", (msg) => {
@@ -45,7 +44,7 @@ const ChessArea = () => {
       <h2>{status}</h2>
       <p>Opponent: {opponent}</p>
       <p>{color}</p>
-      <RenderBoard socket={socket} color={color} />
+      {status === "Connected" && <RenderBoard socket={socket} color={color} />}
 
     </div>
   );
