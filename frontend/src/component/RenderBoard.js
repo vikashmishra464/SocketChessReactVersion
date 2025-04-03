@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import "./chessboardStyle.css";
 
-export default function App({ socket, color }) {
+export default function App({ socket, color}) {
   const resetChessBoard = [
     ["r", "n", "b", "q", "k", "b", "n", "r"],
     ["p", "p", "p", "p", "p", "p", "p", "p"],
@@ -12,28 +12,26 @@ export default function App({ socket, color }) {
     ["P", "P", "P", "P", "P", "P", "P", "P"],
     ["R", "N", "B", "Q", "K", "B", "N", "R"],
   ];
-
-  const [board, setBoard] = useState(() => JSON.parse(JSON.stringify(resetChessBoard)));
+  const [board, setBoard] = useState([...resetChessBoard]);
   
   const pieceUnicode = {
-    R: "\u2656", N: "\u2658", B: "\u2657", Q: "\u2655", K: "\u2654", P: "\u2659",
-    r: "\u265C", n: "\u265E", b: "\u265D", q: "\u265B", k: "\u265A", p: "\u265F",
+    R: "♖", N: "♘", B: "♗", Q: "♕", K: "♔", P: "♙",
+    r: "♜", n: "♞", b: "♝", q: "♛", k: "♚", p: "♟",
   };
-
-  const parseFEN = (fen) => {
-    return fen.split(" ")[0].split("/").map(row => {
+  const parseFEN=(fen)=> {
+    const rows = fen.split(" ")[0].split("/");
+    return rows.map(row => {
       let expandedRow = [];
       for (let char of row) {
         if (!isNaN(char)) {
-          expandedRow.push(...Array(parseInt(char)).fill(null));
+          expandedRow.push(...Array(parseInt(char)).fill(null)); // Empty squares
         } else {
           expandedRow.push(char);
         }
       }
       return expandedRow;
     });
-  };
-
+  }
   const draggedItem = useRef(null);
   const draggedFrom = useRef(null);
 
@@ -49,8 +47,12 @@ export default function App({ socket, color }) {
   const handleDrop = (e, rowIndex, colIndex) => {
     e.preventDefault();
     if (!draggedFrom.current) return;
-    if (color === "black" && 'A' <= draggedItem.current && draggedItem.current <= 'Z') return;
-    if (color === "white" && 'a' <= draggedItem.current && draggedItem.current <= 'z') return;
+    if(color==="black" && 'A'<=draggedItem.current && draggedItem.current<='Z'){
+      return ;
+    }
+    if(color==="white" && 'a'<=draggedItem.current && draggedItem.current<='z'){
+      return ;
+    }
 
     const move = {
       from: `${String.fromCharCode(97 + draggedFrom.current.colIndex)}${8 - draggedFrom.current.rowIndex}`,
@@ -64,17 +66,21 @@ export default function App({ socket, color }) {
   };
 
   useEffect(() => {
-    const handleGameStart = () => setBoard(JSON.parse(JSON.stringify(resetChessBoard)));
-    const handleMove = (newMove) => setBoard(parseFEN(newMove));
+    socket.on("gamestart", () => {
+      setBoard([...resetChessBoard]);
+    });
 
-    socket.on("gamestart", handleGameStart);
-    socket.on("move", handleMove);
+    socket.on("move", (newMove) => {
+      console.log(newMove);
+      const newBoard=parseFEN(newMove);
+      setBoard(newBoard);
+      });
 
     return () => {
-      socket.off("gamestart", handleGameStart);
-      socket.off("move", handleMove);
+      socket.off("move");
+      socket.off("gamestart");
     };
-  }, []);
+  });
 
   return (
     <div className="chess-board">
@@ -89,8 +95,10 @@ export default function App({ socket, color }) {
             onDrop={(e) => handleDrop(e, rowIndex, colIndex)}
           >
             {piece && <span className="piece">{pieceUnicode[piece]}</span>}
-            {(rowIndex === 0 || rowIndex === 7) && <div className="gridMarkBox">{`${String.fromCharCode(97 + colIndex)}`}</div>}
-            {(colIndex === 0 || colIndex === 7) && <div className="gridMarkBox">{`${8 - rowIndex}`}</div>}
+            {rowIndex === 0 && <div className="gridMarkBox">{`${String.fromCharCode(97 + colIndex)}`}</div>}
+            {colIndex === 0 && <div className="gridMarkBox">{`${8 - rowIndex}`}</div>}
+            {rowIndex === 7 && <div className="gridMarkBox">{`${String.fromCharCode(97 + colIndex)}`}</div>}
+            {colIndex === 7 && <div className="gridMarkBox">{`${8 - rowIndex}`}</div>}
           </div>
         ))
       )}
