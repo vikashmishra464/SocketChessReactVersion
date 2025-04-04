@@ -6,7 +6,7 @@ function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<EntryPage />} />
+        <Route index path="/" element={<EntryPage />} />
         <Route path="/play" element={<ChessArea/>} />
         
       </Routes>
