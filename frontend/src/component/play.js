@@ -3,7 +3,7 @@ import { socket } from "./socketClientConnection";
 import RenderBoard from "./RenderBoard";
 
 socket.connect();
-
+console.log(socket);
 const ChessArea = () => {
   const [opponent, setOpponent] = useState(null);
   const [status, setStatus] = useState("Connecting...");

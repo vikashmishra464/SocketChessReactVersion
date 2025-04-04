@@ -10,8 +10,6 @@ let waiting_Players = [];
 let active_Games = {};
 let current_Game_Status={};
 io.on("connection", (socket) => {
-    console.log("New Player Connected:", socket.id);
-
     if (waiting_Players.length > 0) {
         const firstPlayer = socket;
         const secondPlayer = waiting_Players.shift();
@@ -30,7 +28,6 @@ io.on("connection", (socket) => {
         socket.emit("waiting", { message: "Waiting for player" });
     }
     socket.on("move",(newMove)=>{
-        console.log(newMove);
         const currentChess = current_Game_Status[socket.id];
         const moveIsValid=currentChess.move(newMove);
         console.log(moveIsValid);
@@ -58,7 +55,6 @@ io.on("connection", (socket) => {
             delete current_Game_Status[socket.id];
             delete current_Game_Status[opponentId];
         }
-
         waiting_Players = waiting_Players.filter(player => player.id !== socket.id);
     });
 });
