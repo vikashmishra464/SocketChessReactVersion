@@ -60,7 +60,9 @@ io.on("connection", (socket) => {
 });
 
 
-
+app.get('/',(req,res)=>{
+    res.send("Chess Backend");
+})
 server.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
 });

@@ -1,6 +1,6 @@
 import { io } from "socket.io-client";
 
-const SOCKET_SERVER_URL = "http://localhost:3000";
+const SOCKET_SERVER_URL = "https://sodukusolverreactversion.onrender.com";
 
 export const socket = io(SOCKET_SERVER_URL, { 
   transports: ["websocket"], 
