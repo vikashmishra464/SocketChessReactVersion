@@ -3,7 +3,7 @@ import "./chessboardStyle.css";
 
 export default function App({ socket, color}) {
   const resetChessBoard = [
-    ["r", "n", "b", "q", "k", "b", "n", "r"],
+    ["r", "n", "b", "k", "q", "b", "n", "r"],
     ["p", "p", "p", "p", "p", "p", "p", "p"],
     [null, null, null, null, null, null, null, null],
     [null, null, null, null, null, null, null, null],
@@ -13,7 +13,7 @@ export default function App({ socket, color}) {
     ["R", "N", "B", "Q", "K", "B", "N", "R"],
   ];
   const [board, setBoard] = useState([...resetChessBoard]);
-  
+
   const pieceUnicode = {
     R: "♖", N: "♘", B: "♗", Q: "♕", K: "♔", P: "♙",
     r: "♜", n: "♞", b: "♝", q: "♛", k: "♚", p: "♟",
@@ -75,7 +75,7 @@ export default function App({ socket, color}) {
       const newBoard=parseFEN(newMove);
       setBoard(newBoard);
       });
-
+      
     return () => {
       socket.off("move");
       socket.off("gamestart");

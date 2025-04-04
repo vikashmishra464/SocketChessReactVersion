@@ -1,0 +1,43 @@
+/* ChessArea.css */
+
+.chess-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #1e1e2f, #12121c);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #e0e0e0;
+    text-align: center;
+    animation: fadeIn 1s ease-in-out;
+  }
+  
+  /* Glowing title */
+  .chess-container h2 {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+    color: #00c9ff;
+    text-shadow: 0 0 10px #00c9ff, 0 0 20px #00c9ff;
+  }
+  
+  /* Subtext */
+  .chess-container p {
+    font-size: 1.2rem;
+    margin: 5px 0;
+    color: #cccccc;
+  }
+  
+  /* Fade-in animation */
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(-15px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  

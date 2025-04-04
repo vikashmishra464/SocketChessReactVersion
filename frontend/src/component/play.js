@@ -1,15 +1,20 @@
 import React, { useEffect, useState } from "react";
 import { socket } from "./socketClientConnection";
 import RenderBoard from "./RenderBoard";
+import Winner from "./Winner";
+import Loser from "./Loser";
+import OpponentLeft from "./OpponentLeft";
+import './playarea.css'
 
 socket.connect();
-console.log(socket);
 const ChessArea = () => {
   const [opponent, setOpponent] = useState(null);
   const [status, setStatus] = useState("Connecting...");
-  const [color,setColor]=useState(null);
+  const [color, setColor] = useState(null);
+  const [gameFinish, setGameFinish] = useState(null);
 
   useEffect(() => {
+    
 
     socket.on("connect", () => {
       setStatus("Waiting for Opponent");
@@ -25,28 +30,37 @@ const ChessArea = () => {
       setStatus("Connected");
     });
 
-    socket.on("OpponentLeft", (msg) => {
-      setOpponent(null);
-      setStatus(msg.message);
+    socket.on("gameOver", (msg) => {
+      setGameFinish(msg.message);
+    });
+
+    socket.on("OpponentLeft", () => {
+      setGameFinish("OpponentLeft");
     });
 
     return () => {
       socket.off("connect");
       socket.off("waiting");
       socket.off("gameStart");
+      socket.off("gameOver");
       socket.off("OpponentLeft");
-
       socket.disconnect();
     };
   }, []);
 
   return (
-    <div>
+    <div className="chess-container">
       <h2>{status}</h2>
       <p>Opponent: {opponent}</p>
       <p>{color}</p>
-      {status === "Connected" && <RenderBoard socket={socket} color={color} />}
 
+      {gameFinish === "Won" && <Winner />}
+      {gameFinish === "Lose" && <Loser />}
+      {gameFinish === "OpponentLeft" && <OpponentLeft />}
+      {gameFinish === null && status === "Connected" && (
+
+        <RenderBoard socket={socket} color={color} />
+      )}
     </div>
   );
 };

@@ -1,36 +1,68 @@
+/* chessboardStyle.css */
+
 .chess-board {
   display: grid;
-  grid-template-columns: repeat(8, 1fr); /* 1fr to distribute space equally */
-  grid-template-rows: repeat(8, 1fr);
-  border: 2px solid black;
-  width: min(90vw, 90vh); /* Use min to constrain size */
-  height: min(90vw, 90vh);
-  aspect-ratio: 1 / 1;
-  margin: auto; /* Center the board */
+  grid-template-columns: repeat(8, 80px);
+  grid-template-rows: repeat(8, 80px);
+  gap: 0;
+  border: 4px solid #333;
+  background-color: #1e1e2f;
+  margin: 40px auto;
+  box-shadow: 0 0 40px rgba(0, 0, 0, 0.7);
+  position: relative;
 }
 
+/* Squares */
 .square {
-  width: 100%;
-  height: 100%;
+  position: relative;
   display: flex;
-  justify-content: center;
   align-items: center;
-  font-size: calc(min(90vw, 90vh) / 12); /* Adjusted font size */
+  justify-content: center;
 }
 
-.square.white {
-  background-color: #f0d9b5;
-}
-
+/* Dark squares */
 .square.black {
-  background-color: #b58863;
+  background-color: #444;
 }
 
-.piece {
-  user-select: none;
+/* Light squares */
+.square.white {
+  background-color: #b9b9b9;
 }
-.gridMarkBox{
-  font-size: 10px;
-  align-items: left;
-  
+
+/* Chess pieces */
+.piece {
+  font-size: 48px;
+  cursor: grab;
+  user-select: none;
+  transition: transform 0.2s ease;
+}
+
+.piece:active {
+  cursor: grabbing;
+  transform: scale(1.15);
+}
+
+/* Coordinates */
+.gridMarkBox {
+  position: absolute;
+  font-size: 12px;
+  color: #eee;
+  pointer-events: none;
+  z-index: 1;
+  padding: 3px;
+}
+
+/* Top & Bottom file letters */
+.square:nth-child(-n+8) .gridMarkBox:first-of-type,
+.square:nth-last-child(-n+8) .gridMarkBox:first-of-type {
+  top: 3px;
+  left: 5px;
+}
+
+/* Left & Right rank numbers */
+.square:nth-child(8n+1) .gridMarkBox:last-of-type,
+.square:nth-child(8n) .gridMarkBox:last-of-type {
+  bottom: 3px;
+  right: 5px;
 }
