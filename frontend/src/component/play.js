@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { socket } from "./socketClientConnection";
 import RenderBoard from "./RenderBoard";
-import { connect } from "socket.io-client";
+
+socket.connect();
+
 const ChessArea = () => {
   const [opponent, setOpponent] = useState(null);
   const [status, setStatus] = useState("Connecting...");
   const [color,setColor]=useState(null);
 
   useEffect(() => {
-    socket.connect();
 
     socket.on("connect", () => {
       setStatus("Waiting for Opponent");
